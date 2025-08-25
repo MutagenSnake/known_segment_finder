@@ -1,0 +1,15 @@
+# Ignore input data and results
+data/
+results/
+rules/
+scripts/
+
+# Ignore Snakemake working directory
+.snakemake/
+sample_sheet.csv
+sample_sheet_maker.py
+config.yaml
+
+# Ignore conda envs if they ever appear here
+envs/*.yaml~
+.env/

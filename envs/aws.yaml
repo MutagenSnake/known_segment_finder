@@ -1,0 +1,5 @@
+name: aws-env
+channels:
+  - conda-forge
+dependencies:
+  - awscli
