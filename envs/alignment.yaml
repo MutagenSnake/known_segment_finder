@@ -7,3 +7,4 @@ dependencies:
   - samtools
   - bwa
   - minimap2
+  - bcftools
