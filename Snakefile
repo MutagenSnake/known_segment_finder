@@ -1,16 +1,23 @@
 import pandas as pd
 
 df = pd.read_csv("sample_sheet.csv")
-# Optional: replace spaces with underscores in Organism
 df["Organism"] = df["Organism"].str.replace(" ", "_")
 
-# Optional: limit SRA for testing
-MAX_SRA = 250
+# Some SRAs failed to download from Logan's bucket; exclude them
+with open("failing_contigs.txt") as f:
+    failing_sras = [line.strip() for line in f]
+df = df[~df["SRA"].isin(failing_sras)]
+
+
+
+# limit SRA
+MAX_SRA = 700
 df = df.head(MAX_SRA)
 
 rule all:
     input:
-        expand("data/contigs/{organism}/{sra}.contigs.fa",
+        # expand("data/contigs/{organism}/{sra}.contigs.fa",
+        expand("data/contigs/{sra}.contigs.fa",
                zip, organism=df["Organism"], sra=df["SRA"]),
         expand("data/bam/{organism}/{ref_base}__{sra}.sorted.bam",
                zip, organism=df["Organism"], ref_base=df["Reference"].apply(lambda x: os.path.basename(x).replace(".fasta","")), sra=df["SRA"]),
@@ -21,7 +28,8 @@ rule all:
 
 rule download_logan_contigs:
     output:
-        "data/contigs/{organism}/{sra}.contigs.fa"
+        # "data/contigs/{organism}/{sra}.contigs.fa"
+        "data/contigs/{sra}.contigs.fa"
     conda:
         "envs/aws.yaml"
     run:
@@ -36,7 +44,8 @@ rule download_logan_contigs:
 rule align_contigs_to_refs:
     input:
         ref="data/segments/{organism}/{ref_base}.fasta",
-        contig="data/contigs/{organism}/{sra}.contigs.fa"
+        # contig="data/contigs/{organism}/{sra}.contigs.fa"
+        contig="data/contigs/{sra}.contigs.fa"
     output:
         bam="data/bam/{organism}/{ref_base}__{sra}.sorted.bam",
         bai="data/bam/{organism}/{ref_base}__{sra}.sorted.bam.bai"
