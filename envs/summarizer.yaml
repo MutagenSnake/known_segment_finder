@@ -1,0 +1,10 @@
+name: summarizer-env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - pandas
+  - biopython
+  - plotly
+  - iqtree
